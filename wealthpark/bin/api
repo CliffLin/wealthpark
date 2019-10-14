@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+
+from wealthpark.api import app
+from wealthpark.database import database
+from wealthpark.config import Development
+
+app.config.from_object(Development())
+database.create_app(app)
+app.run(port=9999)
