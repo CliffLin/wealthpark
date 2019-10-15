@@ -4,6 +4,7 @@ PYTHON=python3
 setup_environment() {
     . "$GITROOT/.env/bin/activate"
     export PYTHONPATH="$GITROOT:$PYTHONPARK"
+    pip install -r "$GITROOT/requirements.txt"
 
     if [ ! -e "$GITROOT/runtime" ]; then
         mkdir "$GITROOT/runtime"
