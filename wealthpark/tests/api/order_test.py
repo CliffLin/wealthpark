@@ -1,3 +1,5 @@
+# pylint: disable=redefined-outer-name
+
 import pytest
 from wealthpark.api.order.routes import mod
 from wealthpark.models.product import Product
@@ -17,7 +19,7 @@ def _postOrder(client, product, purchaser, timestamp):
 def testPostOrderWithNoneData(client):
     resp = _postOrder(client, 100, 1000, 1566265701)
     assert resp.status_code == 400
-    assert resp.json['success'] == False
+    assert resp.json['success'] is False
 
 def testPostorder(client):
     newProduct = Product('testProduct1')
@@ -25,7 +27,7 @@ def testPostorder(client):
     db.session.add(newProduct)
     db.session.add(newPurchaser)
     db.session.commit()
-    
+
     resp = _postOrder(client, 1, 1, 1566265701)
     assert resp.status_code == 200
-    assert resp.json['success'] == True
+    assert resp.json['success'] is True

@@ -1,3 +1,5 @@
+#!/this/script/should/be/compatible/with/dash
+
 export GITROOT=$(git rev-parse --show-toplevel)
 PYTHON=python3
 

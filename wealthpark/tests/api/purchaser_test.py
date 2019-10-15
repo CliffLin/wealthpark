@@ -1,6 +1,8 @@
-import pytest
-import datetime
+# pylint: disable=redefined-outer-name
+
 import time
+import datetime
+import pytest
 
 from wealthpark.api.purchaser.routes import mod
 from wealthpark.database import db
@@ -24,15 +26,15 @@ def _postProduct(client, name):
 def testPostProduct(client):
     resp = _postProduct(client, 'bob')
     assert resp.status_code == 200
-    assert resp.json['success'] == True
+    assert resp.json['success'] is True
 
 def testPostSameProduct(client):
     resp = _postProduct(client, 'bob')
     assert resp.status_code == 200
-    assert resp.json['success'] == True
+    assert resp.json['success'] is True
     resp = _postProduct(client, 'bob')
     assert resp.status_code == 400
-    assert resp.json['success'] == False
+    assert resp.json['success'] is False
 
 def testQueryPurchase(client):
     newProduct1 = Product('testProduct1')
@@ -88,4 +90,3 @@ def testQueryPurchase(client):
 
     assert len(resp.json['purchases'].keys()) == 1
     assert len(resp.json['purchases']['2019-08-05']) == 1
-

@@ -1,10 +1,8 @@
 import json
-import time
 import datetime
 
 from flask import Blueprint, jsonify, request
 from sqlalchemy import exc, func
-from sqlalchemy.orm import lazyload, joinedload
 
 from wealthpark.api.common.error import MissingParameter, InvalidData
 from wealthpark.api.common.error import DatabaseError
@@ -17,27 +15,26 @@ mod = Blueprint('purchaser', __name__)
 
 @mod.route('', methods=['POST'])
 def purchaser():
-    if request.method == 'POST':
+    try:
+        data = json.loads(request.data)
+        name = data.get('name', None)
+        if name is None:
+            return MissingParameter
+
+        newPurchaser = Purchaser(name)
+        db.session.add(newPurchaser)
         try:
-            data = json.loads(request.data)
-            name = data.get('name', None)
-            if name == None:
-                return MissingParameter
-            
-            newPurchaser = Purchaser(name)
-            db.session.add(newPurchaser)
-            try:
-                db.session.commit()
-                db.session.refresh(newPurchaser)
-                return jsonify(
-                    {
-                        'success': True,
-                        'result': newPurchaser.as_dict()})
-            except exc.SQLAlchemyError as e:
-                db.session.rollback()
-                return DatabaseError(e)
-        except (ValueError):
-            return InvalidData
+            db.session.commit()
+            db.session.refresh(newPurchaser)
+            return jsonify(
+                {
+                    'success': True,
+                    'result': newPurchaser.as_dict()})
+        except exc.SQLAlchemyError as e:
+            db.session.rollback()
+            return DatabaseError(e)
+    except ValueError:
+        return InvalidData
 
 @mod.route('/<int:purchaser_id>/product', methods=['GET'])
 def getPurchaserProducts(purchaser_id):
@@ -45,7 +42,8 @@ def getPurchaserProducts(purchaser_id):
     end = request.args.get('end_date')
 
     query = db.session.query(
-        func.strftime("%Y-%m-%d", Order.purchase_timestamp), func.group_concat(Product.name, ';')
+        func.strftime('%Y-%m-%d', Order.purchase_timestamp),
+        func.group_concat(Product.name, ';')
     ).join(Product).filter(
         Order.purchaser_id == purchaser_id
     )
@@ -53,11 +51,12 @@ def getPurchaserProducts(purchaser_id):
         start = datetime.datetime.fromisoformat('%sT00:00:00+09:00' % start)
         query = query.filter(Order.purchase_timestamp >= start)
     if end:
-        end = datetime.datetime.fromisoformat('%sT00:00:00+09:00' % end) + datetime.timedelta(days=1)
+        end = datetime.datetime.fromisoformat('%sT00:00:00+09:00' % end) + \
+                datetime.timedelta(days=1)
         query = query.filter(Order.purchase_timestamp <= end)
 
     rows = query.group_by(
-        func.strftime("%Y-%m-%d", Order.purchase_timestamp)
+        func.strftime('%Y-%m-%d', Order.purchase_timestamp)
     ).all()
     ret = dict()
 

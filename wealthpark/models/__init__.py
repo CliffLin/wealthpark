@@ -1,3 +1,5 @@
+# pylint: disable=no-member
+
 from wealthpark.database import db
 
 class Base:

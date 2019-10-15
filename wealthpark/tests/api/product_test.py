@@ -1,3 +1,5 @@
+# pylint: disable=redefined-outer-name
+
 import pytest
 from wealthpark.api.product.routes import mod
 
@@ -17,13 +19,12 @@ def _postProduct(client, name):
 def testPostProduct(client):
     resp = _postProduct(client, 'tomato')
     assert resp.status_code == 200
-    assert resp.json['success'] == True
+    assert resp.json['success'] is True
 
 def testPostSameProduct(client):
     resp = _postProduct(client, 'tomato')
     assert resp.status_code == 200
-    assert resp.json['success'] == True
+    assert resp.json['success'] is True
     resp = _postProduct(client, 'tomato')
     assert resp.status_code == 400
-    assert resp.json['success'] == False
-
+    assert resp.json['success'] is False

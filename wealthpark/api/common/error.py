@@ -9,11 +9,11 @@ class APIError(Response):
         kwargs = dict()
         kwargs['mimetype'] = 'application/json'
         kwargs['status'] = 400
-        return super(APIError, self).__init__(
-                json.dumps((self._base)), **kwargs)
+        super(APIError, self).__init__(
+            json.dumps((self._base)), **kwargs)
 
 
 MissingParameter = APIError('missing parameters')
 InvalidData = APIError('invalid data')
 DatabaseError = lambda err: APIError(str(err.__dict__['orig']))
-CustomError = lambda msg: APIError(msg)
+CustomError = APIError

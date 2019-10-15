@@ -1,8 +1,9 @@
+# pylint: disable=redefined-outer-name
+
 import pytest
 from flask import Flask
 
 from wealthpark.config import Testing
-from wealthpark.api.product.routes import mod
 from wealthpark.database import database, db as _db
 
 @pytest.fixture
