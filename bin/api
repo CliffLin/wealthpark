@@ -1,1 +1,16 @@
-../wealthpark/bin/api
+#!/usr/bin/env python
+
+import os
+
+from wealthpark.api import app
+from wealthpark.database import database
+from wealthpark.config import Development
+from wealthpark.config import Production
+
+env = os.getenv('ENV', 'dev')
+if env == 'prod':
+    app.config.from_object(Production())
+else:
+    app.config.from_object(Development())
+database.create_app(app)
+app.run()
