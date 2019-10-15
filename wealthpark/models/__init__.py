@@ -1,5 +1,9 @@
 from wealthpark.database import db
 
+class Base:
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 class Timestamp(db.Model):
     __abstract__ = True
 

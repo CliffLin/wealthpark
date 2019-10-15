@@ -11,3 +11,8 @@ class Producation(Config):
 
 class Development(Config):
     ENV = 'development'
+
+class Testing(Config):
+    ENV = 'development'
+    TEST = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////%s/runtime/test_database.db' % os.environ.get('GITROOT')

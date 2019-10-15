@@ -1,10 +1,10 @@
 import uuid
 
 from wealthpark.models.utils import GUID
-from wealthpark.models import Timestamp
+from wealthpark.models import Timestamp, Base
 from wealthpark.database import db
 
-class Order(Timestamp):
+class Order(Base, Timestamp):
     __tablename__ = 'order'
     
     id = db.Column(GUID(), primary_key=True, default=str(uuid.uuid4()))
