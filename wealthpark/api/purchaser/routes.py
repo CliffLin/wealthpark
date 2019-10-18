@@ -54,13 +54,16 @@ def getPurchaserProducts(purchaser_id):
         end = datetime.datetime.fromisoformat('%sT00:00:00+09:00' % end) + \
                 datetime.timedelta(days=1)
         query = query.filter(Order.purchase_timestamp <= end)
+    
+    try:
+        rows = query.group_by(
+            func.strftime('%Y-%m-%d', Order.purchase_timestamp)
+        ).all()
+        ret = dict()
+        for row in rows:
+            ret[row[0]] = [dict(product=i) for i in row[1].split(';')]
+    
+        return jsonify(dict(purchases=ret))
 
-    rows = query.group_by(
-        func.strftime('%Y-%m-%d', Order.purchase_timestamp)
-    ).all()
-    ret = dict()
-
-    for row in rows:
-        ret[row[0]] = [dict(product=i) for i in row[1].split(';')]
-
-    return jsonify(dict(purchases=ret))
+    except exc.SQLAlchemyError as e:
+        return DatabaseError(e)
